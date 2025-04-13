@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { Upload, Download, ImagePlus } from 'lucide-react';
+import { Upload, Download, ImagePlus, Github, Linkedin, Twitter, MessageCircle, Instagram, Facebook, Heart } from 'lucide-react';
 
 interface PhotoPreview {
   url: string;
@@ -89,91 +89,157 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 p-8">
-      <div className="max-w-4xl mx-auto">
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-800 mb-2">KondiPress Photo App</h1>
-          <p className="text-gray-600">Upload, merge, and download your photos side by side</p>
-        </div>
-
-        <div className="bg-white rounded-lg shadow-md p-6 mb-8">
-          <div className="flex items-center justify-center mb-6">
-            <button
-              onClick={() => fileInputRef.current?.click()}
-              className="flex items-center gap-2 bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 transition-colors"
-              disabled={photos.length >= 3}
-            >
-              <Upload size={20} />
-              Upload Photo {photos.length}/3
-            </button>
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/*"
-              onChange={handleFileUpload}
-              className="hidden"
-              multiple
-            />
+    <div className="min-h-screen bg-gray-100 flex flex-col">
+      <div className="flex-grow p-8">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-8">
+            <h1 className="text-4xl font-bold text-gray-800 mb-2">KondiPress Photo App</h1>
+            <p className="text-gray-600">Upload, merge, and download your photos side by side</p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-            {[0, 1, 2].map((index) => (
-              <div
-                key={index}
-                className="aspect-square border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center relative"
+          <div className="bg-white rounded-lg shadow-md p-6 mb-8">
+            <div className="flex items-center justify-center mb-6">
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                className="flex items-center gap-2 bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 transition-colors"
+                disabled={photos.length >= 3}
               >
-                {photos[index] ? (
-                  <>
-                    <img
-                      src={photos[index].url}
-                      alt={`Upload ${index + 1}`}
-                      className="w-full h-full object-cover rounded-lg"
-                    />
-                    <button
-                      onClick={() => removePhoto(index)}
-                      className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full hover:bg-red-600"
-                    >
-                      ×
-                    </button>
-                  </>
-                ) : (
-                  <div className="text-gray-400 flex flex-col items-center">
-                    <ImagePlus size={32} />
-                    <span className="mt-2">Empty</span>
-                  </div>
-                )}
-              </div>
-            ))}
+                <Upload size={20} />
+                Upload Photo {photos.length}/3
+              </button>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleFileUpload}
+                className="hidden"
+                multiple
+              />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+              {[0, 1, 2].map((index) => (
+                <div
+                  key={index}
+                  className="aspect-square border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center relative"
+                >
+                  {photos[index] ? (
+                    <>
+                      <img
+                        src={photos[index].url}
+                        alt={`Upload ${index + 1}`}
+                        className="w-full h-full object-cover rounded-lg"
+                      />
+                      <button
+                        onClick={() => removePhoto(index)}
+                        className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full hover:bg-red-600"
+                      >
+                        ×
+                      </button>
+                    </>
+                  ) : (
+                    <div className="text-gray-400 flex flex-col items-center">
+                      <ImagePlus size={32} />
+                      <span className="mt-2">Empty</span>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+
+            <div className="flex justify-center gap-4">
+              <button
+                onClick={mergePhotos}
+                className="bg-green-500 text-white px-6 py-3 rounded-lg hover:bg-green-600 transition-colors disabled:opacity-50"
+                disabled={photos.length < 2}
+              >
+                Merge Photos
+              </button>
+              <button
+                onClick={downloadMergedImage}
+                className="bg-purple-500 text-white px-6 py-3 rounded-lg hover:bg-purple-600 transition-colors disabled:opacity-50"
+                disabled={!mergedImage}
+              >
+                <Download size={20} className="inline-block mr-2" />
+                Download
+              </button>
+            </div>
           </div>
 
-          <div className="flex justify-center gap-4">
-            <button
-              onClick={mergePhotos}
-              className="bg-green-500 text-white px-6 py-3 rounded-lg hover:bg-green-600 transition-colors disabled:opacity-50"
-              disabled={photos.length < 2}
+          {mergedImage && (
+            <div className="bg-white rounded-lg shadow-md p-6">
+              <h2 className="text-2xl font-semibold mb-4">Merged Result</h2>
+              <img src={mergedImage} alt="Merged" className="w-full rounded-lg" />
+            </div>
+          )}
+
+          <canvas ref={canvasRef} className="hidden" />
+        </div>
+      </div>
+
+      <footer className="bg-white shadow-md mt-auto">
+        <div className="max-w-4xl mx-auto py-6 px-8">
+          <div className="flex flex-col items-center gap-6">
+            <a
+              href="https://wa.link/b80wka"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-colors"
             >
-              Merge Photos
-            </button>
-            <button
-              onClick={downloadMergedImage}
-              className="bg-purple-500 text-white px-6 py-3 rounded-lg hover:bg-purple-600 transition-colors disabled:opacity-50"
-              disabled={!mergedImage}
-            >
-              <Download size={20} className="inline-block mr-2" />
-              Download
-            </button>
+              <MessageCircle size={20} />
+              Suggest Improvement
+            </a>
+
+            <div className="flex items-center gap-4">
+              <a
+                href="https://github.com/kadrikondi"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-gray-600 hover:text-gray-900 transition-colors"
+              >
+                <Github size={24} />
+              </a>
+              <a
+                href="https://www.linkedin.com/in/abdulkadri-idris-91838812a/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-gray-600 hover:text-gray-900 transition-colors"
+              >
+                <Linkedin size={24} />
+              </a>
+              <a
+                href="https://x.com/kadrikondi"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-gray-600 hover:text-gray-900 transition-colors"
+              >
+                <Twitter size={24} />
+              </a>
+              <a
+                href="https://www.instagram.com/kadrikondi"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-gray-600 hover:text-gray-900 transition-colors"
+              >
+                <Instagram size={24} />
+              </a>
+              <a
+                href="https://web.facebook.com/abdulkadri.idris?_rdc=1&_rdr#"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-gray-600 hover:text-gray-900 transition-colors"
+              >
+                <Facebook size={24} />
+              </a>
+            </div>
+            
+            <div className="flex items-center gap-2 text-gray-600">
+              <span>Developed by Kadrikondi with</span>
+              <Heart size={16} className="text-red-500 fill-current" />
+            </div>
           </div>
         </div>
-
-        {mergedImage && (
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <h2 className="text-2xl font-semibold mb-4">Merged Result</h2>
-            <img src={mergedImage} alt="Merged" className="w-full rounded-lg" />
-          </div>
-        )}
-
-        <canvas ref={canvasRef} className="hidden" />
-      </div>
+      </footer>
     </div>
   );
 }
